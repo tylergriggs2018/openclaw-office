@@ -919,7 +919,9 @@ export const useChatDockStore = create<ChatDockState>((set, get) => ({
         ? event.sessionKey
         : get().currentSessionKey;
     if (eventSessionKey !== get().currentSessionKey) {
-      return;
+      // Switch to the incoming session so responses render
+      if (eventSessionKey) set({ currentSessionKey: eventSessionKey });
+      else return;
     }
 
     const eventState = String(event.state || "");
@@ -1109,6 +1111,8 @@ export const useChatDockStore = create<ChatDockState>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  updateCurrentSessionKey: (key: string) => set({ currentSessionKey: key }),
 
   initEventListeners: (wsClient) => {
     if (!wsClient) return () => {};
