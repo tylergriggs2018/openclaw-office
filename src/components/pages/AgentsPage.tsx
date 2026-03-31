@@ -6,6 +6,7 @@ import { AgentDetailTabs } from "@/components/console/agents/AgentDetailTabs";
 import { AgentListPanel } from "@/components/console/agents/AgentListPanel";
 import { CreateAgentDialog } from "@/components/console/agents/CreateAgentDialog";
 import { DeleteAgentDialog } from "@/components/console/agents/DeleteAgentDialog";
+import { OFFICE_ROLE_ORDER, OFFICE_ROLES } from "@/lib/agent-office-roles";
 import { useAgentsStore } from "@/store/console-stores/agents-store";
 
 export function AgentsPage() {
@@ -24,10 +25,44 @@ export function AgentsPage() {
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t("agents.description")}</p>
       </div>
 
-      <div className="flex gap-6">
+      <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
         <AgentListPanel />
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 space-y-4">
+          <section className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Mission Control Office</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Four specialized agents, each with a distinct operating lane.
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {OFFICE_ROLE_ORDER.map((roleKey) => {
+                const role = OFFICE_ROLES[roleKey];
+                return (
+                  <div key={role.key} className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: role.color }} />
+                      <div>
+                        <div className="font-semibold text-gray-900 dark:text-gray-100">{role.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{role.subtitle}</div>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">{role.description}</p>
+                    <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="font-medium">Skills:</div>
+                      <div>{role.skills.join(" · ")}</div>
+                      <div className="mt-2 font-medium">Tools:</div>
+                      <div>{role.tools.join(" · ")}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
           {selectedAgent ? (
             <div className="space-y-4">
               <AgentDetailHeader agent={selectedAgent} />

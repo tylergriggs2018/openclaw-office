@@ -9,6 +9,7 @@ import {
   ZONE_COLORS_DARK,
 } from "@/lib/constants";
 import { calculateDeskSlots } from "@/lib/position-allocator";
+import { OFFICE_ROLES, OFFICE_ROLE_KEY_IDS, OFFICE_ROLE_ORDER } from "@/lib/agent-office-roles";
 import { useOfficeStore } from "@/store/office-store";
 import { detectMeetingGroups, calculateMeetingSeats } from "@/store/meeting-manager";
 import { AgentAvatar } from "./AgentAvatar";
@@ -26,20 +27,56 @@ export function FloorPlan() {
   const isDark = theme === "dark";
   const colors = isDark ? ZONE_COLORS_DARK : ZONE_COLORS;
 
+  function isOfficeRoleAgent(agent: VisualAgent): boolean {
+    return (
+      OFFICE_ROLE_ORDER.some((role) => agent.id === OFFICE_ROLE_KEY_IDS[role]) ||
+      OFFICE_ROLE_ORDER.some((role) => agent.name.includes(OFFICE_ROLES[role].name))
+    );
+  }
+
   const deskAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "desk" && !a.isSubAgent && !a.movement && a.confirmed),
+    () =>
+      agentList.filter(
+        (a) =>
+          a.zone === "desk" &&
+          !a.isSubAgent &&
+          !a.movement &&
+          a.confirmed &&
+          !isOfficeRoleAgent(a),
+      ),
     [agentList],
   );
   const hotDeskAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "hotDesk" && !a.movement),
+    () =>
+      agentList.filter(
+        (a) =>
+          a.zone === "hotDesk" &&
+          !a.movement &&
+          !a.isPlaceholder &&
+          !isOfficeRoleAgent(a),
+      ),
     [agentList],
   );
   const loungeAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "lounge" && !a.movement && !a.isPlaceholder),
+    () =>
+      agentList.filter(
+        (a) =>
+          a.zone === "lounge" &&
+          !a.movement &&
+          !a.isPlaceholder &&
+          !isOfficeRoleAgent(a),
+      ),
     [agentList],
   );
   const meetingAgents = useMemo(
-    () => agentList.filter((a) => a.zone === "meeting" && !a.movement && !a.isPlaceholder),
+    () =>
+      agentList.filter(
+        (a) =>
+          a.zone === "meeting" &&
+          !a.movement &&
+          !a.isPlaceholder &&
+          !isOfficeRoleAgent(a),
+      ),
     [agentList],
   );
   const walkingAgents = useMemo(

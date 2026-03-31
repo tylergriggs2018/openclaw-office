@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { parseAgentEvent } from "@/gateway/event-parser";
 import { localPersistence } from "@/lib/local-persistence";
+import { OFFICE_ROLE_ORDER, OFFICE_ROLES } from "@/lib/agent-office-roles";
+import { SEEDED_OFFICE_AGENTS } from "@/lib/agent-office-seed";
 
 enableMapSet();
 import type {
@@ -235,6 +237,7 @@ export const useOfficeStore = create<OfficeStore>()(
     agentCosts: {} as Record<string, number>,
     currentPage: "office" as PageId,
     chatDockHeight: getInitialChatDockHeight(),
+    workflowPanelOpen: false,
     maxSubAgents: 8,
     agentToAgentConfig: { enabled: false, allow: [] } as AgentToAgentConfig,
     runIdMap: new Map(),
@@ -716,6 +719,38 @@ export const useOfficeStore = create<OfficeStore>()(
         }
 
         state.globalMetrics = computeMetrics(state.agents, state.globalMetrics);
+
+        // Seed the four mission-control office agents so they're always present
+        for (const item of SEEDED_OFFICE_AGENTS) {
+          if (state.agents.has(item.id)) continue;
+          const role = OFFICE_ROLES[item.roleKey];
+          const pos = allocatePosition(item.id, role.zone === "hotDesk", new Set<string>());
+          state.agents.set(item.id, {
+            id: item.id,
+            name: item.name,
+            status: "idle",
+            position: pos,
+            currentTool: null,
+            speechBubble: null,
+            lastActiveAt: Date.now(),
+            toolCallCount: 0,
+            toolCallHistory: [],
+            runId: null,
+            isSubAgent: false,
+            isPlaceholder: false,
+            parentAgentId: null,
+            childAgentIds: [],
+            zone: role.zone as AgentZone,
+            originalPosition: null,
+            movement: null,
+            confirmed: true,
+            arrivedAtHotDeskAt: role.zone === "hotDesk" ? Date.now() : null,
+            pendingRetire: false,
+            arrivedAtMeetingAt: role.zone === "meeting" ? Date.now() : null,
+            manualMeeting: false,
+          });
+        }
+        state.globalMetrics = computeMetrics(state.agents, state.globalMetrics);
       });
       // Prefill lounge with placeholder sub-agents
       useOfficeStore.getState().prefillLoungePlaceholders(
@@ -1142,6 +1177,12 @@ export const useOfficeStore = create<OfficeStore>()(
       } catch {
         // localStorage unavailable
       }
+    },
+
+    setWorkflowPanelOpen: (open: boolean) => {
+      set((state) => {
+        state.workflowPanelOpen = open;
+      });
     },
 
     setMaxSubAgents: (n: number) => {

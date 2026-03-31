@@ -30,6 +30,8 @@ export function TopBar({ isMobile = false }: TopBarProps) {
   const theme = useOfficeStore((s) => s.theme);
   const setTheme = useOfficeStore((s) => s.setTheme);
   const currentPage = useOfficeStore((s) => s.currentPage);
+  const workflowPanelOpen = useOfficeStore((s) => s.workflowPanelOpen);
+  const setWorkflowPanelOpen = useOfficeStore((s) => s.setWorkflowPanelOpen);
 
   const statusCfg = getStatusConfig(t)[connectionStatus];
   const isOfficePage = currentPage === "office";
@@ -41,6 +43,18 @@ export function TopBar({ isMobile = false }: TopBarProps) {
       </div>
       <TopNav currentPage={currentPage} />
       <div className="ml-auto flex items-center gap-3 justify-self-end">
+        {isOfficePage && (
+          <button
+            onClick={() => setWorkflowPanelOpen(!workflowPanelOpen)}
+            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+              workflowPanelOpen
+                ? "border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-600 dark:bg-blue-900/30 dark:text-blue-300"
+                : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
+            }`}
+          >
+            Mission Control
+          </button>
+        )}
         <ThemeToggle theme={theme} setTheme={setTheme} />
         <LanguageSwitcher />
         <ConnectionIndicator

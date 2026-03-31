@@ -3,6 +3,8 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ConsoleLayout } from "@/components/layout/ConsoleLayout";
 import { FloorPlan } from "@/components/office-2d/FloorPlan";
+import { OfficeView } from "@/components/office/OfficeView";
+import { WorkflowPanel } from "@/components/office/WorkflowPanel";
 import { AgentsPage } from "@/components/pages/AgentsPage";
 import { ChannelsPage } from "@/components/pages/ChannelsPage";
 import { CronPage } from "@/components/pages/CronPage";
@@ -90,7 +92,7 @@ export function App() {
       <PageTracker />
       <ChatWorkspaceBootstrap wsClient={wsClient} />
       <Routes>
-        <Route path="/" element={<AppShell isMobile={isMobile}><FloorPlan /></AppShell>} />
+        <Route path="/" element={<AppShell isMobile={isMobile}><OfficeView /></AppShell>} />
         <Route element={<ConsoleLayout />}>
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
