@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import { ChatDialog } from "@/components/chat/ChatDialog";
-import { ChatDockBar } from "@/components/chat/ChatDockBar";
 import { RestartBanner } from "@/components/shared/RestartBanner";
 import { ToastContainer } from "@/components/shared/ToastContainer";
 import { useOfficeStore } from "@/store/office-store";
@@ -45,7 +44,6 @@ export function AppShell({ children, isMobile = false }: AppShellProps) {
         <main className="relative flex flex-1 flex-col overflow-hidden">
           <div className="relative flex-1 overflow-hidden">{content}</div>
           <ChatDialog />
-          {!hideSidebar && <ChatDockBar />}
         </main>
         {!hideSidebar && (isMobile ? (
           <>
